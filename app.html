@@ -50,9 +50,9 @@
   .trust-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
   .trust-box b { font-size: 15px; color: var(--gold); display: block; margin-bottom: 2px; }
   .trust-box span { font-size: 11px; color: var(--muted); }
-  .btn-primary { width: 100%; background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
-  .btn-gold { width: 100%; background: linear-gradient(135deg, #ffb300, #ff6d00); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
-  .btn-dark { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 11px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
+  .btn-primary { width: 100%; background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; margin-top: 8px; }
+  .btn-gold { width: 100%; background: linear-gradient(135deg, #ffb300, #ff6d00); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; margin-top: 8px; }
+  .btn-dark { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 11px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; display: block; margin-top: 8px; }
   .social-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
   .screen { display: none; }
   .screen.active { display: block; }
@@ -125,7 +125,7 @@
         <li><b>Снятие ликвидности:</b> подтверждение обновления локальных экстремумов перед разворотом.</li>
         <li><b>Отмена сценария:</b> стоп строго за уровнем 78.6% Фибоначчи.</li>
       </ul>
-      <a href="https://t.me" target="_blank" class="btn-gold">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</a>
+      <button class="btn-gold" onclick="go('vip')">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</button>
     </div>
   </div>
 
@@ -154,9 +154,9 @@
           <p class="text-muted" style="margin-top: 3px;">Повторяйте автоматические сетапы из нашего закрытого канала или подключайте личный API-ключ без права вывода средств.</p>
         </div>
       </div>
-      <a href="https://bingxdao.com" target="_blank" class="btn-primary">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
-      <a href="https://t.me" target="_blank" class="btn-gold">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
-      <a href="https://t.me" target="_blank" class="btn-dark">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <button class="btn-primary" onclick="go('bingx')">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</button>
+      <button class="btn-gold" onclick="go('vip')">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</button>
+      <button class="btn-dark" onclick="go('main')">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</button>
     </div>
   </div>
 
@@ -176,14 +176,14 @@
         <div class="trust-box"><b>5% Риск</b><span>Строгая математика без усреднений</span></div>
         <div class="trust-box"><b>6 Рынков</b><span>Круглосуточный AI-сканер золота и крипты</span></div>
       </div>
-      <a href="https://t.me" target="_blank" class="btn-primary">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
-      <a href="https://t.me" target="_blank" class="btn-gold">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
-      <a href="https://t.me" target="_blank" class="btn-dark">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</a>
-      <a href="https://bingxdao.com" target="_blank" class="btn-dark">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
+      <button class="btn-primary" onclick="go('main')">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</button>
+      <button class="btn-gold" onclick="go('vip')">💎 КАНАЛ С СИГНАЛАМИ БОТА</button>
+      <button class="btn-dark" onclick="go('dm')">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</button>
+      <button class="btn-dark" onclick="go('bingx')">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</button>
       <div class="social-row">
-        <a href="https://youtube.com" target="_blank" class="btn-dark">▶️ YouTube</a>
-        <a href="https://tiktok.com" target="_blank" class="btn-dark">🎵 TikTok</a>
-        <a href="https://instagram.com" target="_blank" class="btn-dark">📸 Insta</a>
+        <button class="btn-dark" onclick="go('yt')">▶️ YouTube</button>
+        <button class="btn-dark" onclick="go('tt')">🎵 TikTok</button>
+        <button class="btn-dark" onclick="go('ig')">📸 Insta</button>
       </div>
     </div>
   </div>
@@ -200,6 +200,32 @@
   if (tg) {
     tg.expand();
     tg.setHeaderColor('#0b0e14');
+  }
+
+  var LINKS = {
+    main: 'https://t.me',
+    vip: 'https://t.me',
+    dm: 'https://t.me',
+    bingx: 'https://bingxdao.com',
+    yt: 'https://youtube.com',
+    tt: 'https://tiktok.com',
+    ig: 'https://instagram.com'
+  };
+
+  function go(key) {
+    var url = LINKS[key];
+    if (!url) return;
+    if (key === 'main' || key === 'vip' || key === 'dm') {
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(url);
+        return;
+      }
+    }
+    if (tg && tg.openLink) {
+      tg.openLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
   }
 
   function switchTab(name, btn) {
