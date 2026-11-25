@@ -202,37 +202,21 @@
     tg.setHeaderColor('#0b0e14');
   }
 
-  var H = ['https:', '', ''].join('/');
+  var proto = 'https:' + String.fromCharCode(47, 47);
+  var at = String.fromCharCode(64);
   var LINKS = {
-    main: H + ['t.me', 'vlad_in_crypt'].join('/'),
-    vip: H + ['t.me', '+Aws_KdmlcfFhNDk6'].join('/'),
-    dm: H + ['t.me', 'Jokwq'].join('/'),
-    bingx: H + ['bingxdao.com', 'invite', 'HPWVBG', ''].join('/'),
-    yt: H + ['://youtube.com', '@vla_dcrypto'].join('/'),
-    tt: H + ['://tiktok.com', '@vlad_in_crypto'].join('/'),
-    ig: H + ['://instagram.com', 'vla_dcrypto'].join('/')
+    main: proto + 't.me/vlad_in_crypt',
+    vip: proto + 't.me/+Aws_KdmlcfFhNDk6',
+    dm: proto + 't.me/Jokwq',
+    bingx: proto + '://bingxdao.com',
+    yt: proto + '://youtube.com' + at + 'vla_dcrypto',
+    tt: proto + '://tiktok.com' + at + 'vlad_in_crypto',
+    ig: proto + '://instagram.com' +at + 'vla_dcrypto',
   };
 
   function go(key) {
     var url = LINKS[key];
     if (!url) return;
-    if ((key === 'main' || key === 'vip' || key === 'dm') && tg && tg.openTelegramLink) {
-      tg.openTelegramLink(url);
-      return;
-    }
-    window.open(url, '_blank');
-  }
-
-
-  function go(key) {
-    var url = LINKS[key];
-    if (!url) return;
-    if (key === 'main' || key === 'vip' || key === 'dm') {
-      if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(url);
-        return;
-      }
-    }
     if (tg && tg.openLink) {
       tg.openLink(url);
     } else {
