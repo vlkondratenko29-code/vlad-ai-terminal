@@ -103,6 +103,7 @@
 
     <button id="btn_sync" class="btn-primary" onclick="manualRefresh()">🔄 ОБНОВИТЬ СТАТИСТИКУ</button>
   </div>
+
   <div id="scr-strategies" class="screen">
     <div class="card">
       <span class="pill pill-green">ОСНОВНОЙ АЛГОРИТМ БОТА</span>
@@ -125,7 +126,7 @@
         <li><b>Снятие ликвидности:</b> подтверждение обновления локальных экстремумов перед разворотом.</li>
         <li><b>Отмена сценария:</b> стоп строго за уровнем 78.6% Фибоначчи.</li>
       </ul>
-      <a class="ext-link btn-gold" data-key="vip" href="#" target="_blank" rel="noopener noreferrer">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</a>
+      <a href="javascript:void(0)" onclick="openTg('+Aws_KdmlcfFhNDk6')" class="btn-gold">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</a>
     </div>
   </div>
 
@@ -154,9 +155,9 @@
           <p class="text-muted" style="margin-top: 3px;">Повторяйте автоматические сетапы из нашего закрытого канала или подключайте личный API-ключ без права вывода средств.</p>
         </div>
       </div>
-      <a class="ext-link btn-primary" data-key="bingx" href="#" target="_blank" rel="noopener noreferrer">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
-      <a class="ext-link btn-gold" data-key="vip" href="#" target="_blank" rel="noopener noreferrer">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
-      <a class="ext-link btn-dark" data-key="main" href="#" target="_blank" rel="noopener noreferrer">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <a href="javascript:void(0)" onclick="openExt('https://bingxdao.com/invite/HPWVBG/')" class="btn-primary">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
+      <a href="javascript:void(0)" onclick="openTg('+Aws_KdmlcfFhNDk6')" class="btn-gold">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
+      <a href="javascript:void(0)" onclick="openTg('vlad_in_crypt')" class="btn-dark">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
     </div>
   </div>
 
@@ -176,15 +177,11 @@
         <div class="trust-box"><b>5% Риск</b><span>Строгая математика без усреднений</span></div>
         <div class="trust-box"><b>6 Рынков</b><span>Круглосуточный AI-сканер золота и крипты</span></div>
       </div>
-      <a class="ext-link btn-primary" data-key="main" href="#" target="_blank" rel="noopener noreferrer">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
-      <a class="ext-link btn-gold" data-key="vip" href="#" target="_blank" rel="noopener noreferrer">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
-      <a class="ext-link btn-dark" data-key="dm" href="#" target="_blank" rel="noopener noreferrer">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</a>
-      <a class="ext-link btn-dark" data-key="bingx" href="#" target="_blank" rel="noopener noreferrer">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
-      <div class="social-row">
-        <a class="ext-link btn-dark" data-key="yt" href="#" target="_blank" rel="noopener noreferrer">▶️ YouTube</a>
-        <a class="ext-link btn-dark" data-key="tt" href="#" target="_blank" rel="noopener noreferrer">🎵 TikTok</a>
-        <a class="ext-link btn-dark" data-key="ig" href="#" target="_blank" rel="noopener noreferrer">📸 Insta</a>
-      </div>
+      <a href="javascript:void(0)" onclick="openTg('vlad_in_crypt')" class="btn-dark">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <a href="javascript:void(0)" onclick="openTg('+Aws_KdmlcfFhNDk6')" class="btn-gold">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
+      <a href="javascript:void(0)" onclick="openTg('Jokwq')" class="btn-dark">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</a>
+      <a href="javascript:void(0)" onclick="openExt('https://bingxdao.com/invite/HPWVBG/')" class="btn-dark">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
+      
     </div>
   </div>
 
@@ -202,31 +199,22 @@
     tg.setHeaderColor('#0b0e14');
   }
 
-  var p = 'https:' + String.fromCharCode(47, 47);
-  var a = String.fromCharCode(64);
-  var LINKS = {
-    main: p + 't.me/vlad_in_crypt',
-    vip: p + 't.me/+Aws_KdmlcfFhNDk6',
-    dm: p + 't.me/Jokwq',
-    bingx: p + '://bingxdao.com',
-    yt: p + '://youtube.com' + a + 'vla_dcrypto',
-    tt: p + '://tiktok.com' + a + 'vlad_in_crypto',
-    ig: p + '://instagram.com' + a + 'vla_dcrypto',
-  };
-
-  document.querySelectorAll('.ext-link').forEach(function(el) {
-    var key = el.getAttribute('data-key');
-    var url = LINKS[key];
-    if (url) {
-      el.setAttribute('href', url);
-      el.addEventListener('click', function(e) {
-        if (tg && tg.openLink) {
-          e.preventDefault();
-          tg.openLink(url);
-        }
-      });
+    function openTg(path) {
+    var full = 'https:' + String.fromCharCode(47, 47) + 't.me' + String.fromCharCode(47) + path;
+    if (tg && tg.openTelegramLink) {
+      tg.openTelegramLink(full);
+    } else {
+      window.open(full, '_blank');
     }
-  });
+  }
+
+    function openExt(url) {
+    if (tg && tg.openLink) {
+      tg.openLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  }
 
   function switchTab(name, btn) {
     document.querySelectorAll('.screen').forEach(function(el) { el.classList.remove('active'); });
@@ -278,3 +266,14 @@
         histEl.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Сделок пока нет</div>';
       } else {
         histEl.innerHTML = st.history.slice().reverse().slice(0, 6).map(function(t) {
+          return '<div class="trade-item"><div><b>' + t.asset + '</b> <span class="' + (t.dir === 'LONG' ? 'tag-long' : 'tag-short') + '">' + t.dir + '</span><div style="font-size: 11px; color: var(--muted);">' + t.date + '</div></div><div style="color: ' + (t.pnl >= 0 ? 'var(--green)' : 'var(--red)') + '; font-weight: 700;">' + (t.pnl >= 0 ? '+' : '') + '$' + t.pnl + '</div></div>';
+        }).join('');
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  loadData();
+  setInterval(loadData, 15000);
+</script>
+</body>
+</html>
