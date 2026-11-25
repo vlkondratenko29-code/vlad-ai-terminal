@@ -50,9 +50,9 @@
   .trust-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
   .trust-box b { font-size: 15px; color: var(--gold); display: block; margin-bottom: 2px; }
   .trust-box span { font-size: 11px; color: var(--muted); }
-  .btn-primary { width: 100%; background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; margin-top: 8px; }
-  .btn-gold { width: 100%; background: linear-gradient(135deg, #ffb300, #ff6d00); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; margin-top: 8px; }
-  .btn-dark { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 11px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; display: block; margin-top: 8px; }
+  .btn-primary { width: 100%; background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
+  .btn-gold { width: 100%; background: linear-gradient(135deg, #ffb300, #ff6d00); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
+  .btn-dark { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 11px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
   .social-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
   .screen { display: none; }
   .screen.active { display: block; }
@@ -101,7 +101,7 @@
       <div id="history_list"><div style="color: var(--muted); font-size: 12px;">Сделок пока нет</div></div>
     </div>
 
-    <button class="btn-primary" onclick="loadData()">🔄 ОБНОВИТЬ СТАТИСТИКУ</button>
+    <button id="btn_sync" class="btn-primary" onclick="manualRefresh()">🔄 ОБНОВИТЬ СТАТИСТИКУ</button>
   </div>
   <div id="scr-strategies" class="screen">
     <div class="card">
@@ -125,7 +125,7 @@
         <li><b>Снятие ликвидности:</b> подтверждение обновления локальных экстремумов перед разворотом.</li>
         <li><b>Отмена сценария:</b> стоп строго за уровнем 78.6% Фибоначчи.</li>
       </ul>
-      <button class="btn-gold" onclick="go('vip')">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</button>
+      <a data-link="vip" href="#" target="_blank" rel="noopener noreferrer" class="btn-gold">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</a>
     </div>
   </div>
 
@@ -154,9 +154,9 @@
           <p class="text-muted" style="margin-top: 3px;">Повторяйте автоматические сетапы из нашего закрытого канала или подключайте личный API-ключ без права вывода средств.</p>
         </div>
       </div>
-      <button class="btn-primary" onclick="go('bingx')">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</button>
-      <button class="btn-gold" onclick="go('vip')">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</button>
-      <button class="btn-dark" onclick="go('main')">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</button>
+      <a data-link="bingx" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
+      <a data-link="vip" href="#" target="_blank" rel="noopener noreferrer" class="btn-gold">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
+      <a data-link="main" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
     </div>
   </div>
 
@@ -176,14 +176,14 @@
         <div class="trust-box"><b>5% Риск</b><span>Строгая математика без усреднений</span></div>
         <div class="trust-box"><b>6 Рынков</b><span>Круглосуточный AI-сканер золота и крипты</span></div>
       </div>
-      <button class="btn-primary" onclick="go('main')">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</button>
-      <button class="btn-gold" onclick="go('vip')">💎 КАНАЛ С СИГНАЛАМИ БОТА</button>
-      <button class="btn-dark" onclick="go('dm')">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</button>
-      <button class="btn-dark" onclick="go('bingx')">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</button>
+      <a data-link="main" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <a data-link="vip" href="#" target="_blank" rel="noopener noreferrer" class="btn-gold">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
+      <a data-link="dm" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</a>
+      <a data-link="bingx" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
       <div class="social-row">
-        <button class="btn-dark" onclick="go('yt')">▶️ YouTube</button>
-        <button class="btn-dark" onclick="go('tt')">🎵 TikTok</button>
-        <button class="btn-dark" onclick="go('ig')">📸 Insta</button>
+        <a data-link="yt" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">▶️ YouTube</a>
+        <a data-link="tt" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">🎵 TikTok</a>
+        <a data-link="ig" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">📸 Insta</a>
       </div>
     </div>
   </div>
@@ -202,27 +202,31 @@
     tg.setHeaderColor('#0b0e14');
   }
 
-  var proto = 'https:' + String.fromCharCode(47, 47);
-  var at = String.fromCharCode(64);
+  var p = 'https:' + String.fromCharCode(47, 47);
+  var a = String.fromCharCode(64);
   var LINKS = {
-    main: proto + 't.me/vlad_in_crypt',
-    vip: proto + 't.me/+Aws_KdmlcfFhNDk6',
-    dm: proto + 't.me/Jokwq',
-    bingx: proto + '://bingxdao.com',
-    yt: proto + '://youtube.com' + at + 'vla_dcrypto',
-    tt: proto + '://tiktok.com' + at + 'vlad_in_crypto',
-    ig: proto + '://instagram.com' +at + 'vla_dcrypto',
+    main: p + 't.me/vlad_in_crypt',
+    vip: p + 't.me/+Aws_KdmlcfFhNDk6',
+    dm: p + 't.me/Jokwq',
+    bingx: p + '://bingxdao.com',
+    yt: p + '://youtube.com' + a + 'vla_dcrypto',
+    tt: p + '://tiktok.com' + a + 'vlad_in_crypto',
+    ig: p + '://instagram.com'
   };
 
-  function go(key) {
+  document.querySelectorAll('[data-link]').forEach(function(el) {
+    var key = el.getAttribute('data-link');
     var url = LINKS[key];
-    if (!url) return;
-    if (tg && tg.openLink) {
-      tg.openLink(url);
-    } else {
-      window.open(url, '_blank');
+    if (url) {
+      el.setAttribute('href', url);
+      el.addEventListener('click', function(e) {
+        if (tg && tg.openLink) {
+          e.preventDefault();
+          tg.openLink(url);
+        }
+      });
     }
-  }
+  });
 
   function switchTab(name, btn) {
     document.querySelectorAll('.screen').forEach(function(el) { el.classList.remove('active'); });
@@ -231,9 +235,17 @@
     btn.classList.add('active');
   }
 
+  async function manualRefresh() {
+    var btn = document.getElementById('btn_sync');
+    btn.innerText = '⏳ СИНХРОНИЗАЦИЯ...';
+    await loadData();
+    btn.innerText = '✅ ДАННЫЕ ОБНОВЛЕНЫ';
+    setTimeout(function() { btn.innerText = '🔄 ОБНОВИТЬ СТАТИСТИКУ'; }, 1500);
+  }
+
   async function loadData() {
     try {
-      var res = await fetch('/api/state?t=' + Date.now());
+      var res = await fetch('/api/state?t=' + Date.now(), { cache: 'no-store' });
       var st = await res.json();
       document.getElementById('bal').innerText = '$' + st.balance;
       var roiEl = document.getElementById('roi');
@@ -266,14 +278,3 @@
         histEl.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Сделок пока нет</div>';
       } else {
         histEl.innerHTML = st.history.slice().reverse().slice(0, 6).map(function(t) {
-          return '<div class="trade-item"><div><b>' + t.asset + '</b> <span class="' + (t.dir === 'LONG' ? 'tag-long' : 'tag-short') + '">' + t.dir + '</span><div style="font-size: 11px; color: var(--muted);">' + t.date + '</div></div><div style="color: ' + (t.pnl >= 0 ? 'var(--green)' : 'var(--red)') + '; font-weight: 700;">' + (t.pnl >= 0 ? '+' : '') + '$' + t.pnl + '</div></div>';
-        }).join('');
-      }
-    } catch (e) { console.error(e); }
-  }
-
-  loadData();
-  setInterval(loadData, 15000);
-</script>
-</body>
-</html>
