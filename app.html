@@ -1,162 +1,26 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>VLAD AI TERMINAL</title>
-<script src="https://telegram.org"></script>
-<style>
-  :root {
-    --bg: #0b0e14;
-    --card: #131722;
-    --card-hover: #181d2b;
-    --border: #1e222d;
-    --green: #00e676;
-    --gold: #ffb300;
-    --red: #ff1744;
-    --blue: #2979ff;
-    --text: #e0e6ed;
-    --muted: #787b86;
+  const BYBIT_MAP = {
+    GOLD: 'PAXGUSDT',
+    BTC: 'BTCUSDT',
+    ETH: 'ETHUSDT',
+    SOL: 'SOLUSDT',
+    XRP: 'XRPUSDT',
+    SUI: 'SUIUSDT'
+  };
+
+  async function loadChart(asset) {
+    const sym = BYBIT_MAP[asset] || 'PAXGUSDT';
+    try {
+      const res = await fetch(`https://bybit.com{sym}&interval=15&limit=55`);
+      const json = await res.json();
+      if (json.result && json.result.list) {
+        const candles = json.result.list.reverse().map(c => ({
+          time: Math.floor(Number(c[0]) / 1000),
+          open: parseFloat(c[1]),
+          high: parseFloat(c[2]),
+          low: parseFloat(c[3]),
+          close: parseFloat(c[4])
+        }));
+        drawCandles(candles);
+      }
+    } catch (e) { console.error(e); }
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  body { background: var(--bg); color: var(--text); padding: 14px 14px 82px 14px; max-width: 480px; margin: 0 auto; }
-  
-  /* Header */
-  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .brand { font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.3px; }
-  .brand span { color: var(--gold); }
-  .badge { background: rgba(0, 230, 118, 0.12); color: var(--green); border: 1px solid rgba(0, 230, 118, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-  .dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); }
-
-  /* Cards & Typography */
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 12px; }
-  .section-title { font-size: 16px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 4px; }
-  .text-muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
-
-  /* Terminal Screen */
-  .balance-row { display: flex; justify-content: space-between; align-items: flex-end; }
-  .balance { font-size: 30px; font-weight: 800; }
-  .pnl { font-size: 13px; font-weight: 700; padding: 4px 8px; border-radius: 8px; }
-  .pnl.pos { color: var(--green); background: rgba(0, 230, 118, 0.12); }
-  .pnl.neg { color: var(--red); background: rgba(255, 23, 68, 0.12); }
-  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-  .stat-item div:last-child { font-size: 14px; font-weight: 700; margin-top: 2px; }
-
-  .tabs { display: flex; gap: 5px; margin-bottom: 10px; }
-  .tab { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 7px 2px; border-radius: 9px; font-weight: 700; font-size: 11px; cursor: pointer; text-align: center; }
-  .tab.active { background: rgba(255, 179, 0, 0.15); border-color: var(--gold); color: var(--gold); }
-  .price-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; }
-  canvas { width: 100%; height: 190px; display: block; border-radius: 8px; background: #0e121b; }
-
-  .trade-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .trade-item:last-child { border-bottom: none; padding-bottom: 0; }
-  .tag-long { color: var(--green); font-weight: 700; }
-  .tag-short { color: var(--red); font-weight: 700; }
-
-  /* Strategy & Academy Cards */
-  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px; }
-  .pill-green { background: rgba(0, 230, 118, 0.12); color: var(--green); }
-  .pill-gold { background: rgba(255, 179, 0, 0.12); color: var(--gold); }
-  .rule-list { list-style: none; margin-top: 8px; }
-  .rule-list li { font-size: 13px; color: var(--text); padding: 5px 0 5px 18px; position: relative; line-height: 1.4; }
-  .rule-list li::before { content: '▸'; color: var(--gold); position: absolute; left: 0; font-weight: bold; }
-
-  .step-box { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-  .step-box:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .step-num { min-width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 179, 0, 0.15); border: 1px solid var(--gold); color: var(--gold); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
-
-  /* Author Profile */
-  .author-hero { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--green)); color: #000; font-weight: 900; font-size: 20px; display: flex; align-items: center; justify-content: center; }
-  .trust-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
-  .trust-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
-  .trust-box b { font-size: 16px; color: var(--gold); display: block; margin-bottom: 2px; }
-  .trust-box span { font-size: 11px; color: var(--muted); }
-
-  /* Buttons */
-  .btn-primary { width: 100%; background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
-  .btn-gold { width: 100%; background: linear-gradient(135deg, #ffb300, #ff6d00); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
-
-  /* Screens & Bottom Navigation */
-  .screen { display: none; }
-  .screen.active { display: block; }
-  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: rgba(19, 23, 34, 0.96); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; z-index: 100; }
-  .nav-btn { background: none; border: none; color: var(--muted); font-size: 10px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
-  .nav-btn span.ico { font-size: 18px; }
-  .nav-btn.active { color: var(--gold); }
-</style>
-</head>
-<body>
-
-  <div class="header">
-    <div class="brand">⚡ VLAD <span>AI TERMINAL</span></div>
-    <div class="badge"><div class="dot"></div> <span id="api_text">AUTO-TRADE ON</span></div>
-  </div>
-
-  <!-- SCREEN 1: TERMINAL -->
-  <div id="scr-terminal" class="screen active">
-    <div class="card">
-      <div class="balance-row">
-        <div>
-          <div class="label">Публичный депозит разгона</div>
-          <div class="balance" id="bal">$95.00</div>
-        </div>
-        <div class="pnl neg" id="roi">-5.0% (-$5.0)</div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-item"><div class="label">Винрейт</div><div id="winrate">0%</div></div>
-        <div class="stat-item"><div class="label">Сделок</div><div id="total_trades">1 (0W/1L)</div></div>
-        <div class="stat-item"><div class="label">Риск / Сд.</div><div id="risk_val">$5.0 (10x)</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="tabs">
-        <div class="tab active" onclick="selectAsset('GOLD', this)">GOLD</div>
-        <div class="tab" onclick="selectAsset('BTC', this)">BTC</div>
-        <div class="tab" onclick="selectAsset('ETH', this)">ETH</div>
-        <div class="tab" onclick="selectAsset('SOL', this)">SOL</div>
-        <div class="tab" onclick="selectAsset('XRP', this)">XRP</div>
-        <div class="tab" onclick="selectAsset('SUI', this)">SUI</div>
-      </div>
-      <div class="price-bar">
-        <span style="color: var(--muted);">Алгоритм: <b>15m Pullback</b></span>
-        <span>Цена: <b id="cur_price" style="color: var(--gold);">—</b></span>
-      </div>
-      <canvas id="chartCanvas" width="800" height="380"></canvas>
-    </div>
-
-    <div class="card">
-      <div class="label" style="margin-bottom: 6px;">Активные позиции бота</div>
-      <div id="active_list"><div style="color: var(--muted); font-size: 12px;">Сканер ищет точку входа...</div></div>
-    </div>
-
-    <div class="card">
-      <div class="label" style="margin-bottom: 6px;">Последние закрытые сделки</div>
-      <div id="history_list"></div>
-    </div>
-
-    <button class="btn-primary" onclick="loadData()">🔄 ОБНОВИТЬ ДАННЫЕ РЫНКА</button>
-  </div>
-
-  <!-- SCREEN 2: STRATEGIES -->
-  <div id="scr-strategies" class="screen">
-    <div class="card">
-      <span class="pill pill-green">ОСНОВНОЙ АЛГОРИТМ БОТА</span>
-      <div class="section-title">📈 Pullback EMA 20/50 + ATR</div>
-      <p class="text-muted">Базовая внутридневная система, по которой работает наш автоматический сканер по 6 активам (GOLD, BTC, ETH, SOL, XRP, SUI).</p>
-      <ul class="rule-list">
-        <li><b>Определение тренда (1H):</b> бот входит только при расхождении EMA20 и EMA50 более 0.18%, полностью игнорируя флэт.</li>
-        <li><b>Точка входа (15m):</b> ждём откат цены к скользящей EMA20 и подтверждающую свечу по тренду.</li>
-        <li><b>Две цели фиксации:</b> TP1 (1:1) для снятия риска и TP2 (1:1.8) для основного профита.</li>
-        <li><b>Защита капитала:</b> динамический Stop Loss по волатильности (2.6 × ATR) и лимит не более 2 сделок в рынке.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <span class="pill pill-gold">ДОПОЛНИТЕЛЬНЫЙ МОДУЛЬ</span>
-      <div class="section-title">🧲 Зоны Фибоначчи 50–61.8% + Ликвидность</div>
-      <p class="text-muted">Свинг-фильтр для поиска глубоких коррекций на старших импульсах (4H → 15m) после снятия стопов толпы.</p>
-      <ul class="rule-list">
-        <li><b>Золотой карман:</b> поиск отката на 50%–61.8% от последнего выраженного импульса.</li>
