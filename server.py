@@ -69,16 +69,16 @@ async def handle_candles(request):
         async with aiohttp.ClientSession() as session:
             async with session.get(url, timeout=8) as resp:
                 raw = await resp.json()
-                candles = [
-                    {
-                        "time": int(c[0] // 1000),
-                        "open": float(c[1]),
-                        "high": float(c[2]),
-                        "low": float(c[3]),
-                        "close": float(c[4]),
-                    }
-                    for c in raw
-                ]
+                candles = []
+                for c in raw:
+                    ts, o, h, l, cl = c[:5]
+                    candles.append({
+                        "time": int(ts) // 1000,
+                        "open": float(o),
+                        "high": float(h),
+                        "low": float(l),
+                        "close": float(cl),
+                    })
                 return web.json_response({"candles": candles})
     except Exception as e:
         return web.json_response({"candles": [], "error": str(e)})
