@@ -125,7 +125,7 @@
         <li><b>Снятие ликвидности:</b> подтверждение обновления локальных экстремумов перед разворотом.</li>
         <li><b>Отмена сценария:</b> стоп строго за уровнем 78.6% Фибоначчи.</li>
       </ul>
-      <a data-link="vip" href="#" target="_blank" rel="noopener noreferrer" class="btn-gold">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</a>
+      <a class="ext-link btn-gold" data-key="vip" href="#" target="_blank" rel="noopener noreferrer">💎 СМОТРЕТЬ ЖИВЫЕ СИГНАЛЫ В ТГ</a>
     </div>
   </div>
 
@@ -154,9 +154,9 @@
           <p class="text-muted" style="margin-top: 3px;">Повторяйте автоматические сетапы из нашего закрытого канала или подключайте личный API-ключ без права вывода средств.</p>
         </div>
       </div>
-      <a data-link="bingx" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
-      <a data-link="vip" href="#" target="_blank" rel="noopener noreferrer" class="btn-gold">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
-      <a data-link="main" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <a class="ext-link btn-primary" data-key="bingx" href="#" target="_blank" rel="noopener noreferrer">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
+      <a class="ext-link btn-gold" data-key="vip" href="#" target="_blank" rel="noopener noreferrer">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
+      <a class="ext-link btn-dark" data-key="main" href="#" target="_blank" rel="noopener noreferrer">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
     </div>
   </div>
 
@@ -176,14 +176,14 @@
         <div class="trust-box"><b>5% Риск</b><span>Строгая математика без усреднений</span></div>
         <div class="trust-box"><b>6 Рынков</b><span>Круглосуточный AI-сканер золота и крипты</span></div>
       </div>
-      <a data-link="main" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
-      <a data-link="vip" href="#" target="_blank" rel="noopener noreferrer" class="btn-gold">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
-      <a data-link="dm" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</a>
-      <a data-link="bingx" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
+      <a class="ext-link btn-primary" data-key="main" href="#" target="_blank" rel="noopener noreferrer">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <a class="ext-link btn-gold" data-key="vip" href="#" target="_blank" rel="noopener noreferrer">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
+      <a class="ext-link btn-dark" data-key="dm" href="#" target="_blank" rel="noopener noreferrer">💬 ЛИЧНАЯ СВЯЗЬ С АВТОРОМ (@Jokwq)</a>
+      <a class="ext-link btn-dark" data-key="bingx" href="#" target="_blank" rel="noopener noreferrer">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
       <div class="social-row">
-        <a data-link="yt" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">▶️ YouTube</a>
-        <a data-link="tt" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">🎵 TikTok</a>
-        <a data-link="ig" href="#" target="_blank" rel="noopener noreferrer" class="btn-dark">📸 Insta</a>
+        <a class="ext-link btn-dark" data-key="yt" href="#" target="_blank" rel="noopener noreferrer">▶️ YouTube</a>
+        <a class="ext-link btn-dark" data-key="tt" href="#" target="_blank" rel="noopener noreferrer">🎵 TikTok</a>
+        <a class="ext-link btn-dark" data-key="ig" href="#" target="_blank" rel="noopener noreferrer">📸 Insta</a>
       </div>
     </div>
   </div>
@@ -211,11 +211,11 @@
     bingx: p + '://bingxdao.com',
     yt: p + '://youtube.com' + a + 'vla_dcrypto',
     tt: p + '://tiktok.com' + a + 'vlad_in_crypto',
-    ig: p + '://instagram.com'
+    ig: p + '://instagram.com' + a + 'vla_dcrypto',
   };
 
-  document.querySelectorAll('[data-link]').forEach(function(el) {
-    var key = el.getAttribute('data-link');
+  document.querySelectorAll('.ext-link').forEach(function(el) {
+    var key = el.getAttribute('data-key');
     var url = LINKS[key];
     if (url) {
       el.setAttribute('href', url);
