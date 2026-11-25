@@ -7,19 +7,14 @@
 <script src="https://telegram.org"></script>
 <style>
   :root {
-    --bg: #0b0e14;
-    --card: #131722;
-    --border: #1e222d;
-    --green: #00e676;
-    --gold: #ffb300;
-    --red: #ff1744;
-    --text: #e0e6ed;
-    --muted: #787b86;
+    --bg: #0b0e14; --card: #131722; --border: #1e222d;
+    --green: #00e676; --gold: #ffb300; --red: #ff1744;
+    --text: #e0e6ed; --muted: #787b86;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
   body { background: var(--bg); color: var(--text); padding: 14px 14px 82px 14px; max-width: 480px; margin: 0 auto; }
   .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .brand { font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.3px; }
+  .brand { font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 6px; }
   .brand span { color: var(--gold); }
   .badge { background: rgba(0, 230, 118, 0.12); color: var(--green); border: 1px solid rgba(0, 230, 118, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
   .dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); }
@@ -37,8 +32,7 @@
   .tabs { display: flex; gap: 5px; margin-bottom: 10px; }
   .tab { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 7px 2px; border-radius: 9px; font-weight: 700; font-size: 11px; cursor: pointer; text-align: center; }
   .tab.active { background: rgba(255, 179, 0, 0.15); border-color: var(--gold); color: var(--gold); }
-  .price-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; }
-  canvas { width: 100%; height: 190px; display: block; border-radius: 8px; background: #0e121b; }
+  #tv_box { height: 260px; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
   .trade-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .trade-item:last-child { border-bottom: none; padding-bottom: 0; }
   .tag-long { color: var(--green); font-weight: 700; }
@@ -62,7 +56,7 @@
   .btn-gold { width: 100%; background: linear-gradient(135deg, #ffb300, #ff6d00); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
   .screen { display: none; }
   .screen.active { display: block; }
-  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: rgba(19, 23, 34, 0.96); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; z-index: 100; }
+  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #131722; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; z-index: 999; }
   .nav-btn { background: none; border: none; color: var(--muted); font-size: 10px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
   .nav-btn span.ico { font-size: 18px; }
   .nav-btn.active { color: var(--gold); }
@@ -93,18 +87,14 @@
 
     <div class="card">
       <div class="tabs">
-        <div class="tab active" onclick="selectAsset('GOLD', this)">GOLD</div>
-        <div class="tab" onclick="selectAsset('BTC', this)">BTC</div>
-        <div class="tab" onclick="selectAsset('ETH', this)">ETH</div>
-        <div class="tab" onclick="selectAsset('SOL', this)">SOL</div>
-        <div class="tab" onclick="selectAsset('XRP', this)">XRP</div>
-        <div class="tab" onclick="selectAsset('SUI', this)">SUI</div>
+        <div class="tab active" onclick="setTV('OANDA:XAUUSD', this)">GOLD</div>
+        <div class="tab" onclick="setTV('BYBIT:BTCUSDT.P', this)">BTC</div>
+        <div class="tab" onclick="setTV('BYBIT:ETHUSDT.P', this)">ETH</div>
+        <div class="tab" onclick="setTV('BYBIT:SOLUSDT.P', this)">SOL</div>
+        <div class="tab" onclick="setTV('BYBIT:XRPUSDT.P', this)">XRP</div>
+        <div class="tab" onclick="setTV('BYBIT:SUIUSDT.P', this)">SUI</div>
       </div>
-      <div class="price-bar">
-        <span style="color: var(--muted);">Алгоритм: <b>15m Pullback</b></span>
-        <span>Цена: <b id="cur_price" style="color: var(--gold);">—</b></span>
-      </div>
-      <canvas id="chartCanvas" width="800" height="380"></canvas>
+      <div id="tv_box"></div>
     </div>
 
     <div class="card">
@@ -117,7 +107,7 @@
       <div id="history_list"><div style="color: var(--muted); font-size: 12px;">Сделок пока нет</div></div>
     </div>
 
-    <button class="btn-primary" onclick="loadData()">🔄 ОБНОВИТЬ ДАННЫЕ РЫНКА</button>
+    <button class="btn-primary" onclick="loadData()">🔄 ОБНОВИТЬ СТАТИСТИКУ</button>
   </div>
   <div id="scr-strategies" class="screen">
     <div class="card">
@@ -201,100 +191,43 @@
     <button class="nav-btn" onclick="switchTab('about', this)"><span class="ico">👤</span><span>Об авторе</span></button>
   </div>
 
+<script src="https://tradingview.com"></script>
 <script>
   if (window.Telegram && window.Telegram.WebApp) {
     window.Telegram.WebApp.expand();
     window.Telegram.WebApp.setHeaderColor('#0b0e14');
   }
 
-  function switchTab(screenName, btnEl) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('scr-' + screenName).classList.add('active');
-    btnEl.classList.add('active');
+  function switchTab(name, btn) {
+    document.querySelectorAll('.screen').forEach(function(el) { el.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('scr-' + name).classList.add('active');
+    btn.classList.add('active');
   }
 
-  let currentAsset = 'GOLD';
-  const BYBIT_MAP = { GOLD: 'PAXGUSDT', BTC: 'BTCUSDT', ETH: 'ETHUSDT', SOL: 'SOLUSDT', XRP: 'XRPUSDT', SUI: 'SUIUSDT' };
-
-  function drawCandles(candles) {
-    const canvas = document.getElementById('chartCanvas');
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-    if (!candles || candles.length === 0) return;
-
-    const lastPrice = candles[candles.length - 1].close;
-    document.getElementById('cur_price').innerText = lastPrice;
-
-    let minP = Infinity, maxP = -Infinity;
-    candles.forEach(c => {
-      if (c.low < minP) minP = c.low;
-      if (c.high > maxP) maxP = c.high;
-    });
-    const pad = (maxP - minP) * 0.1 || 1;
-    minP -= pad;
-    maxP += pad;
-    const toY = p => h - ((p - minP) / (maxP - minP)) * h;
-
-    ctx.strokeStyle = '#1e222d';
-    ctx.lineWidth = 1;
-    for (let i = 1; i < 5; i++) {
-      const y = (h / 5) * i;
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  function setTV(sym, tabEl) {
+    if (tabEl) {
+      document.querySelectorAll('.tab').forEach(function(el) { el.classList.remove('active'); });
+      tabEl.classList.add('active');
     }
-
-    const step = w / candles.length;
-    const bodyW = Math.max(4, step * 0.62);
-
-    candles.forEach((c, idx) => {
-      const x = idx * step + step / 2;
-      const isUp = c.close >= c.open;
-      const color = isUp ? '#00e676' : '#ff1744';
-
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(x, toY(c.high)); ctx.lineTo(x, toY(c.low)); ctx.stroke();
-
-      const yOpen = toY(c.open);
-      const yClose = toY(c.close);
-      ctx.fillStyle = color;
-      ctx.fillRect(x - bodyW / 2, Math.min(yOpen, yClose), bodyW, Math.max(3, Math.abs(yClose - yOpen)));
-    });
-
-    const curY = toY(lastPrice);
-    ctx.strokeStyle = '#ffb300';
-    ctx.setLineDash();
-    ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(w, curY); ctx.stroke();
-    ctx.setLineDash([]);
-  }
-
-  async function loadChart(asset) {
-    const sym = BYBIT_MAP[asset] || 'PAXGUSDT';
-    const host = ['https:', '', '://bybit.com', 'v5', 'market', 'kline'].join('/');
-    const query = '?category=linear&symbol=' + sym + '&interval=15&limit=55';
-    try {
-      const res = await fetch(host + query);
-      const json = await res.json();
-      if (json.result && json.result.list) {
-        const candles = json.result.list.reverse().map(c => ({
-          time: Math.floor(Number(c) / 1000),
-          open: parseFloat(c),
-          high: parseFloat(c),
-          low: parseFloat(c),
-          close: parseFloat(c)
-        }));
-        drawCandles(candles);
-      }
-    } catch (e) { console.error(e); }
-  }
-
-  function selectAsset(asset, el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    currentAsset = asset;
-    loadChart(asset);
+    document.getElementById('tv_box').innerHTML = '';
+    if (typeof TradingView !== 'undefined') {
+      new TradingView.widget({
+        autosize: true,
+        symbol: sym,
+        interval: "15",
+        timezone: "Europe/Minsk",
+        theme: "dark",
+        style: "1",
+        locale: "ru",
+        toolbar_bg: "#131722",
+        enable_publishing: false,
+        hide_top_toolbar: true,
+        hide_legend: true,
+        save_image: false,
+        container_id: "tv_box"
+      });
+    }
   }
 
   async function loadData() {
@@ -314,10 +247,25 @@
       if (!st.active || st.active.length === 0) {
         actEl.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Нет открытых сделок — сканер в поиске</div>';
       } else {
-        actEl.innerHTML = st.active.map(t => '<div class="trade-item"><div><b>' + t.asset + '</b> <span class="' + (t.dir === 'LONG' ? 'tag-long' : 'tag-short') + '">' + t.dir + '</span><div style="font-size: 11px; color: var(--muted);">Вход: ' + t.entry + ' • SL: ' + t.sl + '</div></div><div style="color: var(--gold); font-weight: 700;">TP2: ' + t.tp2 + '</div></div>').join('');
+        actEl.innerHTML = st.active.map(function(t) {
+          return '<div class="trade-item"><div><b>' + t.asset + '</b> <span class="' + (t.dir === 'LONG' ? 'tag-long' : 'tag-short') + '">' + t.dir + '</span><div style="font-size: 11px; color: var(--muted);">Вход: ' + t.entry + ' • SL: ' + t.sl + '</div></div><div style="color: var(--gold); font-weight: 700;">TP2: ' + t.tp2 + '</div></div>';
+        }).join('');
       }
 
       const histEl = document.getElementById('history_list');
       if (!st.history || st.history.length === 0) {
         histEl.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Сделок пока нет</div>';
       } else {
+        histEl.innerHTML = st.history.slice().reverse().slice(0, 6).map(function(t) {
+          return '<div class="trade-item"><div><b>' + t.asset + '</b> <span class="' + (t.dir === 'LONG' ? 'tag-long' : 'tag-short') + '">' + t.dir + '</span><div style="font-size: 11px; color: var(--muted);">' + t.date + '</div></div><div style="color: ' + (t.pnl >= 0 ? 'var(--green)' : 'var(--red)') + '; font-weight: 700;">' + (t.pnl >= 0 ? '+' : '') + '$' + t.pnl + '</div></div>';
+        }).join('');
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  setTV('OANDA:XAUUSD', null);
+  loadData();
+  setInterval(loadData, 15000);
+</script>
+</body>
+</html>
