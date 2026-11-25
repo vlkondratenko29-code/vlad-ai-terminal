@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VLAD AI TERMINAL</title>
 <script src="https://telegram.org"></script>
-<script src="https://unpkg.com"></script>
 <style>
   :root {
     --bg: #0b0e14;
@@ -33,10 +32,11 @@
   .pnl.neg { color: var(--red); background: rgba(255, 23, 68, 0.12); }
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
   .stat-item div:last-child { font-size: 15px; font-weight: 700; margin-top: 2px; }
-  .tabs { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; }
-  .tab { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 7px 6px; border-radius: 9px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .tab { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 7px 4px; border-radius: 9px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; }
   .tab.active { background: rgba(255, 179, 0, 0.15); border-color: var(--gold); color: var(--gold); }
-  #chart_container { height: 220px; width: 100%; border-radius: 10px; overflow: hidden; }
+  .price-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
+  canvas { width: 100%; height: 200px; display: block; border-radius: 8px; background: #0e121b; }
   .trade-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .trade-item:last-child { border-bottom: none; padding-bottom: 0; }
   .tag-long { color: var(--green); font-weight: 700; }
@@ -48,21 +48,21 @@
 
   <div class="header">
     <div class="brand">⚡ VLAD <span>AI TERMINAL</span></div>
-    <div class="badge" id="api_badge"><div class="dot"></div> <span id="api_text">LIVE BINGX</span></div>
+    <div class="badge"><div class="dot"></div> <span id="api_text">AUTO-TRADE ON</span></div>
   </div>
 
   <div class="card">
     <div class="balance-row">
       <div>
         <div class="label">Баланс разгона</div>
-        <div class="balance" id="bal">$100.00</div>
+        <div class="balance" id="bal">$95.00</div>
       </div>
-      <div class="pnl pos" id="roi">0.0%</div>
+      <div class="pnl neg" id="roi">-5.0% (-$5.0)</div>
     </div>
     <div class="stats-grid">
       <div class="stat-item"><div class="label">Винрейт</div><div id="winrate">0%</div></div>
-      <div class="stat-item"><div class="label">Сделок</div><div id="total_trades">0</div></div>
-      <div class="stat-item"><div class="label">Риск / Сд.</div><div id="risk_val">$5.0</div></div>
+      <div class="stat-item"><div class="label">Сделок</div><div id="total_trades">1 (0W/1L)</div></div>
+      <div class="stat-item"><div class="label">Риск / Сд.</div><div id="risk_val">$5.0 (10x)</div></div>
     </div>
   </div>
 
@@ -75,7 +75,11 @@
       <div class="tab" onclick="selectAsset('XRP', this)">XRP</div>
       <div class="tab" onclick="selectAsset('SUI', this)">SUI</div>
     </div>
-    <div id="chart_container"></div>
+    <div class="price-bar">
+      <span style="color: var(--muted);">Таймфрейм: <b>15m</b></span>
+      <span>Цена: <b id="cur_price" style="color: var(--gold);">—</b></span>
+    </div>
+    <canvas id="chartCanvas" width="800" height="400"></canvas>
   </div>
 
   <div class="card">
@@ -85,7 +89,7 @@
 
   <div class="card">
     <div class="label" style="margin-bottom: 6px;">История закрытых сделок</div>
-    <div id="history_list"><div style="color: var(--muted); font-size: 12px;">Загрузка истории...</div></div>
+    <div id="history_list"></div>
   </div>
 
   <button class="btn-refresh" onclick="loadData()">🔄 ОБНОВИТЬ ДАННЫЕ ТЕРМИНАЛА</button>
@@ -97,26 +101,75 @@
   }
 
   let currentAsset = 'GOLD';
-  const chartEl = document.getElementById('chart_container');
-  const chart = LightweightCharts.createChart(chartEl, {
-    layout: { background: { color: '#131722' }, textColor: '#787b86' },
-    grid: { vertLines: { color: '#1e222d' }, horzLines: { color: '#1e222d' } },
-    timeScale: { timeVisible: true, secondsVisible: false },
-    rightPriceScale: { borderColor: '#1e222d' },
-  });
-  const candleSeries = chart.addCandlestickSeries({
-    upColor: '#00e676', downColor: '#ff1744', borderVisible: false,
-    wickUpColor: '#00e676', wickDownColor: '#ff1744'
-  });
+
+  function drawCandles(candles) {
+    const canvas = document.getElementById('chartCanvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    if (!candles || candles.length === 0) return;
+
+    const lastPrice = candles[candles.length - 1].close;
+    document.getElementById('cur_price').innerText = lastPrice;
+
+    let minP = Infinity, maxP = -Infinity;
+    candles.forEach(c => {
+      if (c.low < minP) minP = c.low;
+      if (c.high > maxP) maxP = c.high;
+    });
+    const pad = (maxP - minP) * 0.1 || 1;
+    minP -= pad;
+    maxP += pad;
+
+    const toY = p => h - ((p - minP) / (maxP - minP)) * h;
+
+    // Сетка
+    ctx.strokeStyle = '#1e222d';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 5; i++) {
+      const y = (h / 5) * i;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+
+    // Свечи
+    const step = w / candles.length;
+    const bodyW = Math.max(4, step * 0.62);
+
+    candles.forEach((c, idx) => {
+      const x = idx * step + step / 2;
+      const isUp = c.close >= c.open;
+      const color = isUp ? '#00e676' : '#ff1744';
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, toY(c.high));
+      ctx.lineTo(x, toY(c.low));
+      ctx.stroke();
+
+      const yOpen = toY(c.open);
+      const yClose = toY(c.close);
+      const top = Math.min(yOpen, yClose);
+      const height = Math.max(3, Math.abs(yClose - yOpen));
+      ctx.fillStyle = color;
+      ctx.fillRect(x - bodyW / 2, top, bodyW, height);
+    });
+
+    // Линия текущей цены
+    const curY = toY(lastPrice);
+    ctx.strokeStyle = '#ffb300';
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(w, curY); ctx.stroke();
+    ctx.setLineDash([]);
+  }
 
   async function loadChart(asset) {
     try {
-      const res = await fetch(`/api/candles?asset=${asset}`);
+      const res = await fetch(`/api/candles?asset=${asset}&t=${Date.now()}`);
       const data = await res.json();
-      if (data.candles && data.candles.length) {
-        candleSeries.setData(data.candles);
-        chart.timeScale().fitContent();
-      }
+      if (data.candles) drawCandles(data.candles);
     } catch (e) { console.error(e); }
   }
 
@@ -129,7 +182,7 @@
 
   async function loadData() {
     try {
-      const res = await fetch('/api/state');
+      const res = await fetch(`/api/state?t=${Date.now()}`);
       const st = await res.json();
       document.getElementById('bal').innerText = `$${st.balance}`;
       const roiEl = document.getElementById('roi');
@@ -141,7 +194,7 @@
       document.getElementById('api_text').innerText = st.auto_trade ? 'AUTO-TRADE ON' : 'SIGNALS ONLY';
 
       const actEl = document.getElementById('active_list');
-      if (st.active.length === 0) {
+      if (!st.active || st.active.length === 0) {
         actEl.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Нет открытых сделок — сканер в поиске</div>';
       } else {
         actEl.innerHTML = st.active.map(t => `
@@ -153,7 +206,7 @@
       }
 
       const histEl = document.getElementById('history_list');
-      if (st.history.length === 0) {
+      if (!st.history || st.history.length === 0) {
         histEl.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Сделок пока нет</div>';
       } else {
         histEl.innerHTML = st.history.slice().reverse().slice(0, 6).map(t => `
@@ -168,7 +221,3 @@
   }
 
   loadData();
-  setInterval(loadData, 15000);
-</script>
-</body>
-</html>
