@@ -1,33 +1,22 @@
 import os
 import json
-import aiohttp
 from aiohttp import web
 
 STATE_FILE = "cloud_state.json"
 
-BINANCE_SYMBOLS = {
-    "GOLD": "PAXGUSDT",
-    "BTC": "BTCUSDT",
-    "ETH": "ETHUSDT",
-    "SOL": "SOLUSDT",
-    "XRP": "XRPUSDT",
-    "SUI": "SUIUSDT",
-}
-
 DEFAULT_STATE = {
-    "balance": 95.0,
-    "net_pnl": -5.0,
-    "roi": -5.0,
-    "total": 1,
+    "balance": 100.0,
+    "net_pnl": 0.0,
+    "roi": 0.0,
+    "total": 0,
     "wins": 0,
-    "losses": 1,
+    "losses": 0,
     "winrate": 0.0,
     "risk": 5.0,
     "auto_trade": True,
     "active": [],
-    "history": [
-        {"date": "23.11 23:10", "asset": "ETH", "dir": "LONG", "pnl": -5.0}
-    ],
+    "history": [],
+    "candles": {}
 }
 
 
@@ -42,11 +31,11 @@ def load_state():
 
 
 async def handle_index(request):
-    return web.FileResponse("app.html", headers={"Cache-Control": "no-store"})
+    return web.FileResponse("app.html", headers={"Cache-Control": "no-store, no-cache, must-revalidate"})
 
 
 async def handle_state(request):
-    return web.json_response(load_state())
+    return web.json_response(load_state(), headers={"Cache-Control": "no-store"})
 
 
 async def handle_sync(request):
@@ -61,34 +50,10 @@ async def handle_sync(request):
         return web.json_response({"ok": False, "error": str(e)}, status=400)
 
 
-async def handle_candles(request):
-    asset = request.query.get("asset", "GOLD")
-    symbol = BINANCE_SYMBOLS.get(asset, "PAXGUSDT")
-    url = f"https://binance.vision{symbol}&interval=15m&limit=55"
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=8) as resp:
-                raw = await resp.json()
-                candles = []
-                for c in raw:
-                    ts, o, h, l, cl = c[:5]
-                    candles.append({
-                        "time": int(ts) // 1000,
-                        "open": float(o),
-                        "high": float(h),
-                        "low": float(l),
-                        "close": float(cl),
-                    })
-                return web.json_response({"candles": candles})
-    except Exception as e:
-        return web.json_response({"candles": [], "error": str(e)})
-
-
 app = web.Application()
 app.router.add_get("/", handle_index)
 app.router.add_get("/api/state", handle_state)
 app.router.add_post("/api/sync", handle_sync)
-app.router.add_get("/api/candles", handle_candles)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
