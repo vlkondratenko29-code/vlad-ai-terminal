@@ -9,8 +9,9 @@
 
   async function loadChart(asset) {
     const sym = BYBIT_MAP[asset] || 'PAXGUSDT';
+    const baseUrl = 'https://bybit.com';
     try {
-      const res = await fetch(`https://bybit.com{sym}&interval=15&limit=55`);
+      const res = await fetch(baseUrl + sym + '&interval=15&limit=55');
       const json = await res.json();
       if (json.result && json.result.list) {
         const candles = json.result.list.reverse().map(c => ({
