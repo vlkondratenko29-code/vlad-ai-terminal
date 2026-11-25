@@ -202,16 +202,27 @@
     tg.setHeaderColor('#0b0e14');
   }
 
-  var P = ['https:', ''].join('/') + '/';
+  var H = ['https:', '', ''].join('/');
   var LINKS = {
-    main: P + 't.me/vlad_in_crypt',
-    vip: P + 't.me/+Aws_KdmlcfFhNDk6',
-    dm: P + 't.me/Jokwq',
-    bingx: P + '://bingxdao.com',
-    yt: P + '://youtube.com',
-    tt: P + '://tiktok.com',
-    ig: P + '://instagram.com'
+    main: H + ['t.me', 'vlad_in_crypt'].join('/'),
+    vip: H + ['t.me', '+Aws_KdmlcfFhNDk6'].join('/'),
+    dm: H + ['t.me', 'Jokwq'].join('/'),
+    bingx: H + ['bingxdao.com', 'invite', 'HPWVBG', ''].join('/'),
+    yt: H + ['://youtube.com', '@vla_dcrypto'].join('/'),
+    tt: H + ['://tiktok.com', '@vlad_in_crypto'].join('/'),
+    ig: H + ['://instagram.com', 'vla_dcrypto'].join('/')
   };
+
+  function go(key) {
+    var url = LINKS[key];
+    if (!url) return;
+    if ((key === 'main' || key === 'vip' || key === 'dm') && tg && tg.openTelegramLink) {
+      tg.openTelegramLink(url);
+      return;
+    }
+    window.open(url, '_blank');
+  }
+
 
   function go(key) {
     var url = LINKS[key];
