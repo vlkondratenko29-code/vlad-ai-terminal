@@ -12,7 +12,7 @@
     --text: #e0e6ed; --muted: #787b86;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  body { background: var(--bg); color: var(--text); padding: 14px 14px 82px 14px; max-width: 480px; margin: 0 auto; }
+  body { background: var(--bg); color: var(--text); padding: 14px 14px 84px 14px; max-width: 480px; margin: 0 auto; }
   .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .brand { font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 6px; }
   .brand span { color: var(--gold); }
@@ -32,7 +32,8 @@
   .tabs { display: flex; gap: 5px; margin-bottom: 10px; }
   .tab { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 7px 2px; border-radius: 9px; font-weight: 700; font-size: 11px; cursor: pointer; text-align: center; }
   .tab.active { background: rgba(255, 179, 0, 0.15); border-color: var(--gold); color: var(--gold); }
-  #tv_box { height: 260px; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .tv-wrap { height: 270px; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #131722; }
+  iframe { width: 100%; height: 100%; border: none; display: block; }
   .trade-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .trade-item:last-child { border-bottom: none; padding-bottom: 0; }
   .tag-long { color: var(--green); font-weight: 700; }
@@ -50,10 +51,12 @@
   .avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--green)); color: #000; font-weight: 900; font-size: 20px; display: flex; align-items: center; justify-content: center; }
   .trust-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
   .trust-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
-  .trust-box b { font-size: 16px; color: var(--gold); display: block; margin-bottom: 2px; }
+  .trust-box b { font-size: 15px; color: var(--gold); display: block; margin-bottom: 2px; }
   .trust-box span { font-size: 11px; color: var(--muted); }
   .btn-primary { width: 100%; background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
   .btn-gold { width: 100%; background: linear-gradient(135deg, #ffb300, #ff6d00); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
+  .btn-dark { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 11px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; display: block; text-decoration: none; margin-top: 8px; }
+  .social-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
   .screen { display: none; }
   .screen.active { display: block; }
   .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: #131722; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; z-index: 999; }
@@ -88,13 +91,15 @@
     <div class="card">
       <div class="tabs">
         <div class="tab active" onclick="setTV('OANDA:XAUUSD', this)">GOLD</div>
-        <div class="tab" onclick="setTV('BYBIT:BTCUSDT.P', this)">BTC</div>
-        <div class="tab" onclick="setTV('BYBIT:ETHUSDT.P', this)">ETH</div>
-        <div class="tab" onclick="setTV('BYBIT:SOLUSDT.P', this)">SOL</div>
-        <div class="tab" onclick="setTV('BYBIT:XRPUSDT.P', this)">XRP</div>
-        <div class="tab" onclick="setTV('BYBIT:SUIUSDT.P', this)">SUI</div>
+        <div class="tab" onclick="setTV('BINANCE:BTCUSDT', this)">BTC</div>
+        <div class="tab" onclick="setTV('BINANCE:ETHUSDT', this)">ETH</div>
+        <div class="tab" onclick="setTV('BINANCE:SOLUSDT', this)">SOL</div>
+        <div class="tab" onclick="setTV('BINANCE:XRPUSDT', this)">XRP</div>
+        <div class="tab" onclick="setTV('BINANCE:SUIUSDT', this)">SUI</div>
       </div>
-      <div id="tv_box"></div>
+      <div class="tv-wrap">
+        <iframe id="tv_frame" src="https://tradingview.com"></iframe>
+      </div>
     </div>
 
     <div class="card">
@@ -113,23 +118,23 @@
     <div class="card">
       <span class="pill pill-green">ОСНОВНОЙ АЛГОРИТМ БОТА</span>
       <div class="section-title">📈 Pullback EMA 20/50 + ATR</div>
-      <p class="text-muted">Базовая внутридневная система, по которой работает наш автоматический сканер по 6 активам (GOLD, BTC, ETH, SOL, XRP, SUI).</p>
+      <p class="text-muted">Внутридневная система без эмоций, по которой работает наш автоматический сканер по 6 активам (GOLD, BTC, ETH, SOL, XRP, SUI).</p>
       <ul class="rule-list">
-        <li><b>Определение тренда (1H):</b> бот входит только при расхождении EMA20 и EMA50 более 0.18%, полностью игнорируя флэт.</li>
+        <li><b>Определение тренда (1H):</b> бот входит только при расхождении EMA20 и EMA50 более 0.18%, полностью отсекая боковик.</li>
         <li><b>Точка входа (15m):</b> ждём откат цены к скользящей EMA20 и подтверждающую свечу по тренду.</li>
         <li><b>Две цели фиксации:</b> TP1 (1:1) для снятия риска и TP2 (1:1.8) для основного профита.</li>
-        <li><b>Защита капитала:</b> динамический Stop Loss по волатильности (2.6 × ATR) и лимит не более 2 сделок в рынке.</li>
+        <li><b>Асимметрия риска:</b> жесткий Stop Loss по волатильности (2.6 × ATR) и запрет на усреднения.</li>
       </ul>
     </div>
 
     <div class="card">
       <span class="pill pill-gold">ДОПОЛНИТЕЛЬНЫЙ МОДУЛЬ</span>
       <div class="section-title">🧲 Зоны Фибоначчи 50–61.8% + Ликвидность</div>
-      <p class="text-muted">Свинг-фильтр для поиска глубоких коррекций на старших импульсах (4H → 15m) после снятия стопов толпы.</p>
+      <p class="text-muted">Свинг-фильтр для поиска глубоких коррекций на старших импульсах (4H → 15m) после выноса стопов толпы.</p>
       <ul class="rule-list">
         <li><b>Золотой карман:</b> поиск отката на 50%–61.8% от последнего выраженного импульса.</li>
-        <li><b>Снятие ликвидности:</b> подтверждение выноса локальных экстремумов за 6 свечей перед разворотом.</li>
-        <li><b>Отмена сценария:</b> жесткий стоп за уровнем 78.6% Фибоначчи без усреднений.</li>
+        <li><b>Снятие ликвидности:</b> подтверждение обновления локальных экстремумов перед разворотом.</li>
+        <li><b>Отмена сценария:</b> стоп строго за уровнем 78.6% Фибоначчи.</li>
       </ul>
     </div>
   </div>
@@ -137,29 +142,30 @@
   <div id="scr-academy" class="screen">
     <div class="card">
       <div class="section-title">🎓 Быстрый старт за 3 шага</div>
-      <p class="text-muted" style="margin-bottom: 14px;">Пошаговая инструкция для новичков, как подключиться к торговой системе и соблюдать риск-менеджмент.</p>
+      <p class="text-muted" style="margin-bottom: 14px;">Пошаговая инструкция для новичков, как подключиться к торговой системе и торговать по строгой математике.</p>
       <div class="step-box">
         <div class="step-num">1</div>
         <div>
-          <b style="font-size: 14px;">Аккаунт на бирже BingX</b>
-          <p class="text-muted" style="margin-top: 3px;">Создайте аккаунт на BingX и переведите рабочий депозит на кошелек <b>Бессрочные фьючерсы (USDT-M)</b>.</p>
+          <b style="font-size: 14px;">Аккаунт на бирже BingX (Бонусы до $5 100)</b>
+          <p class="text-muted" style="margin-top: 3px;">Зарегистрируйтесь по партнёрской ссылке ниже и переведите рабочий депозит на кошелек <b>Бессрочные фьючерсы (USDT-M)</b>.</p>
         </div>
       </div>
       <div class="step-box">
         <div class="step-num">2</div>
         <div>
-          <b style="font-size: 14px;">Настройка маржи и риска 5%</b>
-          <p class="text-muted" style="margin-top: 3px;">Всегда используйте <b>Изолированную маржу</b> и плечо не выше <b>10x</b>. Риск на сделку не более 5% от депозита.</p>
+          <b style="font-size: 14px;">Изолированная маржа и риск 5%</b>
+          <p class="text-muted" style="margin-top: 3px;">Всегда ставьте <b>Изолированную маржу</b> и плечо не выше <b>10x</b>. Риск на сделку не более 5% от депозита — серия из 4–5 стопов не убьет счет.</p>
         </div>
       </div>
       <div class="step-box">
         <div class="step-num">3</div>
         <div>
-          <b style="font-size: 14px;">Авто-копирование или API</b>
-          <p class="text-muted" style="margin-top: 3px;">Повторяйте сетапы из VIP-канала руками по готовым уровням либо подключите персональный API-ключ (строго без права вывода).</p>
+          <b style="font-size: 14px;">Вход в канал сигналов и комьюнити</b>
+          <p class="text-muted" style="margin-top: 3px;">Повторяйте автоматические сетапы из нашего закрытого канала или подключайте личный API-ключ без права вывода средств.</p>
         </div>
       </div>
-      <a href="https://t.me" target="_blank" class="btn-gold">🚀 ЗАБРАТЬ ИНСТРУКЦИЮ В ТГ</a>
+      <a href="https://bingxdao.com/invite/HPWVBG/" target="_blank" class="btn-primary">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
+      <a href="https://t.me/+Aws_KdmlcfFhNDk6" target="_blank" class="btn-gold">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
     </div>
   </div>
 
@@ -168,19 +174,25 @@
       <div class="author-hero">
         <div class="avatar">V</div>
         <div>
-          <div style="font-size: 17px; font-weight: 800;">Влад • @vlad_in_crypt</div>
-          <div style="font-size: 12px; color: var(--gold); font-weight: 600;">Алгоритмический трейдинг и AI-разработка</div>
+          <div style="font-size: 17px; font-weight: 800;">Влад • Изнанка рынка</div>
+          <div style="font-size: 12px; color: var(--gold); font-weight: 600;">Бывший РОП • Алгоритмический трейдинг</div>
         </div>
       </div>
-      <p class="text-muted">В прошлом руководил отделом продаж в крупных крипто-проектах. Пройдя через эмоциональные ошибки ручной торговли, перевел весь свой опыт и риск-менеджмент в строгий Python-код.</p>
+      <p class="text-muted">5+ лет руководил отделом продаж торговых сигналов. Знаю всю «кухню» Форекса и крипты изнутри — без сказок про «иксы за вечер». Перевел дисциплину и математику риска в чистый код.</p>
       <div class="trust-grid">
+        <div class="trust-box"><b>5+ лет</b><span>Опыта в индустрии и построении систем</span></div>
         <div class="trust-box"><b>100% Live</b><span>Открытый разгон депозита в прямых эфирах</span></div>
-        <div class="trust-box"><b>5% Риск</b><span>Никаких усреднений и пересиживаний убытков</span></div>
-        <div class="trust-box"><b>6 Рынков</b><span>Круглосуточный AI-сканер золота и топ-крипты</span></div>
-        <div class="trust-box"><b>24/7 API</b><span>Автоматическое выставление SL и TP на бирже</span></div>
+        <div class="trust-box"><b>5% Риск</b><span>Строгая математика без усреднений</span></div>
+        <div class="trust-box"><b>6 Рынков</b><span>Круглосуточный AI-сканер золота и крипты</span></div>
       </div>
-      <a href="https://t.me" target="_blank" class="btn-primary">📢 ОСНОВНОЙ TELEGRAM-КАНАЛ</a>
-      <a href="https://t.me" target="_blank" class="btn-gold">💎 ПОЛУЧИТЬ ДОСТУП В VIP / К БОТУ</a>
+      <a href="https://t.me/vlad_in_crypt" target="_blank" class="btn-primary">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <a href="https://t.me/+Aws_KdmlcfFhNDk6" target="_blank" class="btn-gold">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
+      <a href="https://bingxdao.com/invite/HPWVBG/" target="_blank" class="btn-dark">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
+      <div class="social-row">
+        <a href="https://www.youtube.com/@vla_dcrypto" target="_blank" class="btn-dark">▶️ YouTube</a>
+        <a href="https://www.tiktok.com/@vlad_in_crypto" target="_blank" class="btn-dark">🎵 TikTok</a>
+        <a href="https://instagram.com" target="_blank" class="btn-dark">📸 Insta</a>
+      </div>
     </div>
   </div>
 
@@ -191,7 +203,6 @@
     <button class="nav-btn" onclick="switchTab('about', this)"><span class="ico">👤</span><span>Об авторе</span></button>
   </div>
 
-<script src="https://tradingview.com"></script>
 <script>
   if (window.Telegram && window.Telegram.WebApp) {
     window.Telegram.WebApp.expand();
@@ -210,24 +221,8 @@
       document.querySelectorAll('.tab').forEach(function(el) { el.classList.remove('active'); });
       tabEl.classList.add('active');
     }
-    document.getElementById('tv_box').innerHTML = '';
-    if (typeof TradingView !== 'undefined') {
-      new TradingView.widget({
-        autosize: true,
-        symbol: sym,
-        interval: "15",
-        timezone: "Europe/Minsk",
-        theme: "dark",
-        style: "1",
-        locale: "ru",
-        toolbar_bg: "#131722",
-        enable_publishing: false,
-        hide_top_toolbar: true,
-        hide_legend: true,
-        save_image: false,
-        container_id: "tv_box"
-      });
-    }
+    var base = ['https:', '', '://tradingview.com', 'widgetembed', ''].join('/');
+    document.getElementById('tv_frame').src = base + '?symbol=' + encodeURIComponent(sym) + '&interval=15&theme=dark&style=1&locale=ru&hidetoptoolbar=1&hidelegend=1&saveimage=0';
   }
 
   async function loadData() {
@@ -263,7 +258,6 @@
     } catch (e) { console.error(e); }
   }
 
-  setTV('OANDA:XAUUSD', null);
   loadData();
   setInterval(loadData, 15000);
 </script>
