@@ -16,7 +16,8 @@ DEFAULT_STATE = {
     "auto_trade": True,
     "active": [],
     "history": [],
-    "candles": {}
+    "last_chart": "",
+    "last_title": "Ожидание нового сигнала..."
 }
 
 
@@ -31,7 +32,7 @@ def load_state():
 
 
 async def handle_index(request):
-    return web.FileResponse("app.html", headers={"Cache-Control": "no-store, no-cache, must-revalidate"})
+    return web.FileResponse("app.html", headers={"Cache-Control": "no-store"})
 
 
 async def handle_state(request):
@@ -43,14 +44,19 @@ async def handle_sync(request):
         data = await request.json()
         if data.get("secret") != "vlad_sync_2026":
             return web.json_response({"ok": False}, status=403)
+        old = load_state()
+        new_st = data["state"]
+        if not new_st.get("last_chart") and old.get("last_chart"):
+            new_st["last_chart"] = old["last_chart"]
+            new_st["last_title"] = old.get("last_title", "")
         with open(STATE_FILE, "w", encoding="utf-8") as f:
-            json.dump(data["state"], f, ensure_ascii=False)
+            json.dump(new_st, f, ensure_ascii=False)
         return web.json_response({"ok": True})
     except Exception as e:
         return web.json_response({"ok": False, "error": str(e)}, status=400)
 
 
-app = web.Application()
+app = web.Application(client_max_size=10 * 1024 * 1024)
 app.router.add_get("/", handle_index)
 app.router.add_get("/api/state", handle_state)
 app.router.add_post("/api/sync", handle_sync)
