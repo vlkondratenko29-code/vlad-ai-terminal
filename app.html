@@ -32,8 +32,8 @@
   .tabs { display: flex; gap: 5px; margin-bottom: 10px; }
   .tab { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 7px 2px; border-radius: 9px; font-weight: 700; font-size: 11px; cursor: pointer; text-align: center; }
   .tab.active { background: rgba(255, 179, 0, 0.15); border-color: var(--gold); color: var(--gold); }
-  .tv-wrap { height: 270px; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #131722; }
-  iframe { width: 100%; height: 100%; border: none; display: block; }
+  .price-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; color: var(--muted); }
+  canvas { width: 100%; height: 210px; background: #0e121b; border-radius: 10px; display: block; border: 1px solid var(--border); }
   .trade-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .trade-item:last-child { border-bottom: none; padding-bottom: 0; }
   .tag-long { color: var(--green); font-weight: 700; }
@@ -77,29 +77,31 @@
       <div class="balance-row">
         <div>
           <div class="label">Публичный депозит разгона</div>
-          <div class="balance" id="bal">$95.00</div>
+          <div class="balance" id="bal">$100.00</div>
         </div>
-        <div class="pnl neg" id="roi">-5.0% (-$5.0)</div>
+        <div class="pnl pos" id="roi">0.0% ($0.0)</div>
       </div>
       <div class="stats-grid">
         <div class="stat-item"><div class="label">Винрейт</div><div id="winrate">0%</div></div>
-        <div class="stat-item"><div class="label">Сделок</div><div id="total_trades">1 (0W/1L)</div></div>
+        <div class="stat-item"><div class="label">Сделок</div><div id="total_trades">0 (0W/0L)</div></div>
         <div class="stat-item"><div class="label">Риск / Сд.</div><div id="risk_val">$5.0 (10x)</div></div>
       </div>
     </div>
 
     <div class="card">
       <div class="tabs">
-        <div class="tab active" onclick="setTV('OANDA:XAUUSD', this)">GOLD</div>
-        <div class="tab" onclick="setTV('BINANCE:BTCUSDT', this)">BTC</div>
-        <div class="tab" onclick="setTV('BINANCE:ETHUSDT', this)">ETH</div>
-        <div class="tab" onclick="setTV('BINANCE:SOLUSDT', this)">SOL</div>
-        <div class="tab" onclick="setTV('BINANCE:XRPUSDT', this)">XRP</div>
-        <div class="tab" onclick="setTV('BINANCE:SUIUSDT', this)">SUI</div>
+        <div class="tab active" onclick="setAsset('GOLD', this)">GOLD</div>
+        <div class="tab" onclick="setAsset('BTC', this)">BTC</div>
+        <div class="tab" onclick="setAsset('ETH', this)">ETH</div>
+        <div class="tab" onclick="setAsset('SOL', this)">SOL</div>
+        <div class="tab" onclick="setAsset('XRP', this)">XRP</div>
+        <div class="tab" onclick="setAsset('SUI', this)">SUI</div>
       </div>
-      <div class="tv-wrap">
-              <div class="tv-wrap" id="tv_container"></div>
+      <div class="price-row">
+        <span>Биржа: <b>BingX 15m</b></span>
+        <span>Цена: <b id="cur_p" style="color: var(--gold);">—</b></span>
       </div>
+      <canvas id="cv" width="800" height="380"></canvas>
     </div>
 
     <div class="card">
@@ -122,7 +124,7 @@
       <ul class="rule-list">
         <li><b>Определение тренда (1H):</b> бот входит только при расхождении EMA20 и EMA50 более 0.18%, полностью отсекая боковик.</li>
         <li><b>Точка входа (15m):</b> ждём откат цены к скользящей EMA20 и подтверждающую свечу по тренду.</li>
-        <li><b>Две цели фиксации:</b> TP1 (1:1) для снятия риска и TP2 (1:1.8) для основного профита.</li>
+        <li><b>Две цели фиксации:</b> TP1 (1:1 • 50%) для снятия риска и TP2 (1:1.8 • 50%) для основного профита.</li>
         <li><b>Асимметрия риска:</b> жесткий Stop Loss по волатильности (2.6 × ATR) и запрет на усреднения.</li>
       </ul>
     </div>
@@ -164,8 +166,8 @@
           <p class="text-muted" style="margin-top: 3px;">Повторяйте автоматические сетапы из нашего закрытого канала или подключайте личный API-ключ без права вывода средств.</p>
         </div>
       </div>
-      <a href="https://bingxdao.com/invite/HPWVBG/" target="_blank" class="btn-primary">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
-      <a href="https://t.me/+Aws_KdmlcfFhNDk6" target="_blank" class="btn-gold">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
+      <a href="https://bingxdao.com" target="_blank" class="btn-primary">🎁 РЕГИСТРАЦИЯ НА BINGX (БОНУСЫ + СКИДКА)</a>
+      <a href="https://t.me" target="_blank" class="btn-gold">💎 ВСТУПИТЬ В КАНАЛ С СИГНАЛАМИ</a>
     </div>
   </div>
 
@@ -185,12 +187,12 @@
         <div class="trust-box"><b>5% Риск</b><span>Строгая математика без усреднений</span></div>
         <div class="trust-box"><b>6 Рынков</b><span>Круглосуточный AI-сканер золота и крипты</span></div>
       </div>
-      <a href="https://t.me/vlad_in_crypt" target="_blank" class="btn-primary">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
-      <a href="https://t.me/+Aws_KdmlcfFhNDk6" target="_blank" class="btn-gold">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
-      <a href="https://bingxdao.com/invite/HPWVBG/" target="_blank" class="btn-dark">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
+      <a href="https://t.me" target="_blank" class="btn-primary">📢 ОСНОВНОЙ КАНАЛ «ИЗНАНКА РЫНКА»</a>
+      <a href="https://t.me" target="_blank" class="btn-gold">💎 КАНАЛ С СИГНАЛАМИ БОТА</a>
+      <a href="https://bingxdao.com" target="_blank" class="btn-dark">📈 ТОРГОВАТЬ НА BINGX (ПАРТНЁРСКАЯ ССЫЛКА)</a>
       <div class="social-row">
-        <a href="https://www.youtube.com/@vla_dcrypto" target="_blank" class="btn-dark">▶️ YouTube</a>
-        <a href="https://www.tiktok.com/@vlad_in_crypto" target="_blank" class="btn-dark">🎵 TikTok</a>
+        <a href="https://youtube.com" target="_blank" class="btn-dark">▶️ YouTube</a>
+        <a href="https://tiktok.com" target="_blank" class="btn-dark">🎵 TikTok</a>
         <a href="https://instagram.com" target="_blank" class="btn-dark">📸 Insta</a>
       </div>
     </div>
@@ -216,36 +218,57 @@
     btn.classList.add('active');
   }
 
-    function setTV(sym, tabEl) {
-    if (tabEl) {
-      document.querySelectorAll('.tab').forEach(function(el) { el.classList.remove('active'); });
-      tabEl.classList.add('active');
-    }
-    var box = document.getElementById('tv_container');
-    box.innerHTML = '<div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div></div>';
-    var sc = document.createElement('script');
-    sc.type = 'text/javascript';
-    sc.src = 'https://tradingview.com';
-    sc.async = true;
-    sc.innerHTML = JSON.stringify({
-      "autosize": true,
-      "symbol": sym,
-      "interval": "15",
-      "timezone": "Europe/Minsk",
-      "theme": "dark",
-      "style": "1",
-      "locale": "ru",
-      "hide_top_toolbar": true,
-      "hide_legend": true,
-      "allow_symbol_change": false,
-      "save_image": false,
-      "calendar": false,
-      "support_host": "https://tradingview.com"
-    });
-    box.firstChild.appendChild(sc);
-  }
-  setTV('OANDA:XAUUSD', null);
+  var curAsset = 'GOLD';
+  var allCandles = {};
 
+  function drawChart() {
+    var list = allCandles[curAsset];
+    var cv = document.getElementById('cv');
+    if (!cv || !list || list.length === 0) return;
+    var ctx = cv.getContext('2d');
+    var w = cv.width, h = cv.height;
+    ctx.clearRect(0, 0, w, h);
+
+    var lastC = list[list.length - 1].c;
+    document.getElementById('cur_p').innerText = lastC;
+
+    var minP = Infinity, maxP = -Infinity;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].l < minP) minP = list[i].l;
+      if (list[i].h > maxP) maxP = list[i].h;
+    }
+    var pad = (maxP - minP) * 0.1 || 1;
+    minP -= pad; maxP += pad;
+    var toY = function(p) { return h - ((p - minP) / (maxP - minP)) * h; };
+
+    ctx.strokeStyle = '#1e222d'; ctx.lineWidth = 1;
+    for (var g = 1; g < 5; g++) {
+      ctx.beginPath(); ctx.moveTo(0, (h / 5) * g); ctx.lineTo(w, (h / 5) * g); ctx.stroke();
+    }
+
+    var step = w / list.length;
+    var bw = Math.max(5, step * 0.62);
+    for (var j = 0; j < list.length; j++) {
+      var c = list[j];
+      var x = j * step + step / 2;
+      var col = c.c >= c.o ? '#00e676' : '#ff1744';
+      ctx.strokeStyle = col; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x, toY(c.h)); ctx.lineTo(x, toY(c.l)); ctx.stroke();
+      ctx.fillStyle = col;
+      ctx.fillRect(x - bw / 2, Math.min(toY(c.o), toY(c.c)), bw, Math.max(3, Math.abs(toY(c.c) - toY(c.o))));
+    }
+
+    var cy = toY(lastC);
+    ctx.strokeStyle = '#ffb300'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+  }
+
+  function setAsset(name, el) {
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    curAsset = name;
+    drawChart();
+  }
 
   async function loadData() {
     try {
@@ -259,6 +282,11 @@
       document.getElementById('total_trades').innerText = st.total + ' (' + st.wins + 'W/' + st.losses + 'L)';
       document.getElementById('risk_val').innerText = '$' + st.risk + ' (10x)';
       document.getElementById('api_text').innerText = st.auto_trade ? 'AUTO-TRADE ON' : 'SIGNALS ONLY';
+
+      if (st.candles) {
+        allCandles = st.candles;
+        drawChart();
+      }
 
       const actEl = document.getElementById('active_list');
       if (!st.active || st.active.length === 0) {
@@ -274,14 +302,3 @@
         histEl.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Сделок пока нет</div>';
       } else {
         histEl.innerHTML = st.history.slice().reverse().slice(0, 6).map(function(t) {
-          return '<div class="trade-item"><div><b>' + t.asset + '</b> <span class="' + (t.dir === 'LONG' ? 'tag-long' : 'tag-short') + '">' + t.dir + '</span><div style="font-size: 11px; color: var(--muted);">' + t.date + '</div></div><div style="color: ' + (t.pnl >= 0 ? 'var(--green)' : 'var(--red)') + '; font-weight: 700;">' + (t.pnl >= 0 ? '+' : '') + '$' + t.pnl + '</div></div>';
-        }).join('');
-      }
-    } catch (e) { console.error(e); }
-  }
-
-  loadData();
-  setInterval(loadData, 15000);
-</script>
-</body>
-</html>
