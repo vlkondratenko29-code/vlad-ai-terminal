@@ -6,7 +6,7 @@ from aiohttp import web
 STATE_FILE = "cloud_state.json"
 
 BINANCE_SYMBOLS = {
-    "GOLD": "PAXGUSDT",  # Золото 1:1 к XAUUSD без геоблокировок Render
+    "GOLD": "PAXGUSDT",
     "BTC": "BTCUSDT",
     "ETH": "ETHUSDT",
     "SOL": "SOLUSDT",
@@ -42,7 +42,7 @@ def load_state():
 
 
 async def handle_index(request):
-    return web.FileResponse("app.html")
+    return web.FileResponse("app.html", headers={"Cache-Control": "no-store"})
 
 
 async def handle_state(request):
@@ -50,7 +50,6 @@ async def handle_state(request):
 
 
 async def handle_sync(request):
-    """Принимает свежие данные о балансе и сделках от вашего домашнего bot.py."""
     try:
         data = await request.json()
         if data.get("secret") != "vlad_sync_2026":
@@ -65,18 +64,18 @@ async def handle_sync(request):
 async def handle_candles(request):
     asset = request.query.get("asset", "GOLD")
     symbol = BINANCE_SYMBOLS.get(asset, "PAXGUSDT")
-    url = f"https://binance.vision{symbol}&interval=15m&limit=65"
+    url = f"https://binance.vision{symbol}&interval=15m&limit=55"
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, timeout=8) as resp:
                 raw = await resp.json()
                 candles = [
                     {
-                        "time": int(c // 1000),
-                        "open": float(c),
-                        "high": float(c),
-                        "low": float(c),
-                        "close": float(c),
+                        "time": int(c[0] // 1000),
+                        "open": float(c[1]),
+                        "high": float(c[2]),
+                        "low": float(c[3]),
+                        "close": float(c[4]),
                     }
                     for c in raw
                 ]
