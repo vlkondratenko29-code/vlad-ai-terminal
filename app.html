@@ -98,7 +98,7 @@
         <div class="tab" onclick="setTV('BINANCE:SUIUSDT', this)">SUI</div>
       </div>
       <div class="tv-wrap">
-        <iframe id="tv_frame" src="https://tradingview.com"></iframe>
+              <div class="tv-wrap" id="tv_container"></div>
       </div>
     </div>
 
@@ -216,14 +216,36 @@
     btn.classList.add('active');
   }
 
-  function setTV(sym, tabEl) {
+    function setTV(sym, tabEl) {
     if (tabEl) {
       document.querySelectorAll('.tab').forEach(function(el) { el.classList.remove('active'); });
       tabEl.classList.add('active');
     }
-    var base = ['https:', '', '://tradingview.com', 'widgetembed', ''].join('/');
-    document.getElementById('tv_frame').src = base + '?symbol=' + encodeURIComponent(sym) + '&interval=15&theme=dark&style=1&locale=ru&hidetoptoolbar=1&hidelegend=1&saveimage=0';
+    var box = document.getElementById('tv_container');
+    box.innerHTML = '<div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div></div>';
+    var sc = document.createElement('script');
+    sc.type = 'text/javascript';
+    sc.src = 'https://tradingview.com';
+    sc.async = true;
+    sc.innerHTML = JSON.stringify({
+      "autosize": true,
+      "symbol": sym,
+      "interval": "15",
+      "timezone": "Europe/Minsk",
+      "theme": "dark",
+      "style": "1",
+      "locale": "ru",
+      "hide_top_toolbar": true,
+      "hide_legend": true,
+      "allow_symbol_change": false,
+      "save_image": false,
+      "calendar": false,
+      "support_host": "https://tradingview.com"
+    });
+    box.firstChild.appendChild(sc);
   }
+  setTV('OANDA:XAUUSD', null);
+
 
   async function loadData() {
     try {
