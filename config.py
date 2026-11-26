@@ -47,3 +47,11 @@ GOLD_SYMBOL = _s("GOLD_SYMBOL", "NCCOGOLD2USD/USDT:USDT")
 
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN не задан в переменных окружения")
+# === НОВЫЕ ПАРАМЕТРЫ (добавь в конец config.py) ===
+DRY_RUN = True            # True = симуляция без реальных ордеров. Поставь False для реальной торговли.
+RISK_PCT = 0.01           # 1% риска на сделку
+LEVERAGE = 5              # плечо
+MAX_NOTIONAL_X = 2.0      # нотионал не более 2х депозита
+DAILY_LOSS_LIMIT_PCT = 0.02  # стоп на день: -2% и пауза
+MAX_CONCURRENT = 2        # максимум открытых позиций одновременно
+GOLD_SYMBOL = "NCCOGOLD2USD/USDT:USDT"
